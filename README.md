@@ -26,7 +26,8 @@ Configure
 -------
 
 ### example.rb
-```
+
+```ruby
 require 'bundler/setup'
 
 require_relative 'plugins/youtube'
