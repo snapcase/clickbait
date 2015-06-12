@@ -14,15 +14,17 @@ class HTTPTitle
     @clnt = HTTPClient.new
     @clnt.cookie_manager = nil
     @clnt.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    @clnt.default_header = { 'Accept' => 'text/html', 'Accept-Language' => 'en' }
+    @options = { :follow_redirect => true }
   end
   
   def get_title(url)
-    domain = host_without_www(URI.parse(url).host)
+    host = URI.parse(url).host
+    domain = host_without_www(host)
     unless config[:blacklist].include?(domain)
-      options = { follow_redirect: true }
-      req = @clnt.head(url, options)
+      req = @clnt.head(url, @options)
       if req.status_code == 200 && req.content_type.start_with?('text/html')
-        doc = Nokogiri::HTML(@clnt.get_content(url, options))
+        doc = Nokogiri::HTML(@clnt.get_content(url, @options))
         if title = doc.at('title')
           title = sanitize(title.text)
           return title.eql?("Imgur") ? nil : title
