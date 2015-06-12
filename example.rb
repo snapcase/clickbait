@@ -15,6 +15,11 @@ bot = Cinch::Bot.new do
     c.ssl.verify = true
     c.plugins.plugins = [Youtube, HTTPTitle, Twitch]
     c.plugins.options[Youtube] = { api_key: 'CHANGE_ME' }
+    c.plugins.options[HTTPTitle] = { blacklist: [ 
+      "youtube.com",
+      "youtu.be",
+      "twitch.tv"
+    ] }
   end
 end
 

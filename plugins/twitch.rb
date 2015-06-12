@@ -19,7 +19,7 @@ class Twitch
     users = m.message.scan(/(?:www.)?twitch\.tv\/([a-zA-Z0-9_]+)/).flatten
     users.each do |user| 
       content = channel_info(user)
-      m.reply(content) unless content.nil?
+      m.reply(content) if content
     end
   end
 end
