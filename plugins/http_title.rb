@@ -23,7 +23,7 @@ class HTTPTitle
     domain = host_without_www(host)
     unless config[:blacklist].include?(domain)
       req = @clnt.head(url, @options)
-      if req.status_code == 200 && req.content_type.start_with?('text/html')
+      if [200, 405].include?(req.status_code) && req.content_type.start_with?('text/html')
         doc = Nokogiri::HTML(@clnt.get_content(url, @options))
         if title = doc.at('title')
           title = sanitize(title.text)

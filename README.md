@@ -16,11 +16,13 @@ Using [bundler](http://bundler.io) for project dependencies.
 % gem install bundler
 ```
 
-After cloning the repository, install gems.
+After cloning the repository, install gems. Make sure that `bundle` is accessible through your `$PATH`. This will most likely be in `$HOME/.gem/ruby/2.2.0/bin/bundle` (your version might differ).
 
 ```
 % bundle install --path vendor/bundle
 ```
+
+Bundler will read the contents of the `Gemfile` and install dependencies.
 
 Configure
 -------
