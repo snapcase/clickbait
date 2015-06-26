@@ -26,7 +26,7 @@ class OldURL
     nick = m.user.nick
     if data = @urls[url: url, channel: channel]
       who, created_at = data.values_at(:who, :created_at)
-      m.reply "!old, posted by %s on %s" % [who, created_at.strftime("%c")]
+      m.reply "!old, posted by %s on %s" % [who, created_at.strftime("%c in %Z")]
     else
       @urls.insert(url: url, who: nick, channel: channel, created_at: Time.now)
     end
