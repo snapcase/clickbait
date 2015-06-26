@@ -45,13 +45,14 @@ bot = Cinch::Bot.new do
     c.port = 7000
     c.ssl.use = true
     c.ssl.verify = true
-    c.plugins.plugins = [Youtube, HTTPTitle, Twitch]
+    c.plugins.plugins = [Youtube, HTTPTitle, Twitch, Old]
     c.plugins.options[Youtube] = { api_key: 'CHANGE_ME' }
     c.plugins.options[HTTPTitle] = { blacklist: [
       "youtube.com",
       "youtu.be",
       "twitch.tv"
     ] }
+    c.plugins.options[Old] = { db: 'sqlite://old.db' }
   end
 end
 
@@ -70,3 +71,6 @@ Posts titles from urls mentioned in the channel(s). You can choose to blacklist 
 
 ### Twitch
 Used to collect information from a stream using the Twitch API.
+
+### OldURL
+Reports if a URL has previously been posted in a channel. You can use it with a variety of adapters, see [Sequel](https://github.com/jeremyevans/sequel) for more information.
