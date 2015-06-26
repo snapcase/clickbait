@@ -35,6 +35,7 @@ require 'bundler/setup'
 require_relative 'plugins/youtube'
 require_relative 'plugins/http_title'
 require_relative 'plugins/twitch'
+require_relative 'plugins/oldurl'
 
 bot = Cinch::Bot.new do
   configure do |c|
@@ -45,14 +46,14 @@ bot = Cinch::Bot.new do
     c.port = 7000
     c.ssl.use = true
     c.ssl.verify = true
-    c.plugins.plugins = [Youtube, HTTPTitle, Twitch, Old]
+    c.plugins.plugins = [Youtube, HTTPTitle, Twitch, OldURL]
     c.plugins.options[Youtube] = { api_key: 'CHANGE_ME' }
     c.plugins.options[HTTPTitle] = { blacklist: [
       "youtube.com",
       "youtu.be",
       "twitch.tv"
     ] }
-    c.plugins.options[Old] = { db: 'sqlite://old.db' }
+    c.plugins.options[OldURL] = { db: 'sqlite://old.db' }
   end
 end
 
