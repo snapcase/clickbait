@@ -22,8 +22,9 @@ class HTTPTitle
     host = URI.parse(url).host
     domain = host_without_www(host)
     unless config[:blacklist].include?(domain)
+      url << '.rss' if domain =~ /(?:.+\.)?reddit(?:static)?\.com/
       req = @clnt.head(url, @options)
-      if [200, 405].include?(req.status_code) && req.content_type.start_with?('text/html')
+      if [200, 405].include?(req.status_code) && req.content_type.start_with?('text/html', 'text/xml')
         doc = Nokogiri::HTML(@clnt.get_content(url, @options))
         if title = doc.at('title')
           title = sanitize(title.text)
