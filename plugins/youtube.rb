@@ -13,10 +13,10 @@ module Clickbait::Plugins
     # @param  [Array]
     # @return [Array, nil]
     def title(id)
-      url  = "https://www.googleapis.com/youtube/v3/videos?id=#{id.join(',')}&" + \
+      url  = "https://www.googleapis.com/youtube/v3/videos?id=#{id.join(',')}&" \
              "key=#{config[:api_key]}&part=snippet&fields=items(id,snippet(title))"
-      json = JSON.load(open(url))
-      json["items"].map { |item| "#{item["id"]} : #{item["snippet"]["title"]}" }
+      json = JSON.parse(open(url).read)
+      json['items'].map { |item| "#{item['id']} : #{item['snippet']['title']}" }
     rescue OpenURI::HTTPError
       nil
     end
@@ -29,10 +29,9 @@ module Clickbait::Plugins
           \S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})
         }x
       ).uniq
-      unless id.empty?
-        titles = title(id)
-        m.reply titles.join(", ")
-      end
+      return if id.empty?
+      titles = title(id)
+      m.reply titles.join(', ')
     end
   end
 end
