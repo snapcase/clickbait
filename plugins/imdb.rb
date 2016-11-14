@@ -10,7 +10,11 @@ class Imdb
   def info(id)
     url = "http://www.omdbapi.com/?i=#{id}&plot=short&r=json"
     if json = JSON.load(open(url))
-       "%s (%d) Ratings: %.1f/10 from %s users. Plot: %s" % [json["Title"], json["Year"], json["imdbRating"], json["imdbVotes"], json["Plot"]]
+      str = '%s (%d)' % [json['Title'], json['Year']]
+      unless json['imdbRating'] == 'N/A'
+        str << '. Ratings: %.1f/10 from %s users' % [json['imdbRating'], json['imdbVotes']]
+      end
+      str << '. Plot: %s' % [json["Plot"]]
     end
   end
 
