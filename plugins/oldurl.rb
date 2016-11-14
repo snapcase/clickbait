@@ -25,9 +25,10 @@ module Clickbait::Plugins
     def check_url(url, m)
       channel = m.channel.name
       nick = m.user.nick
-      if data = @urls[url: url, channel: channel]
+      data = @urls[url: url, channel: channel]
+      if data
         who, created_at = data.values_at(:who, :created_at)
-        m.reply "!old, posted by %s on %s" % [who, created_at.strftime("%c in %Z")] unless who == m.user.nick
+        m.reply format('!old, posted by %s on %s', who, created_at.strftime('%c in %Z')) unless who == m.user.nick
       else
         @urls.insert(url: url, who: nick, channel: channel, created_at: Time.now)
       end
