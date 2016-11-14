@@ -1,27 +1,31 @@
 require 'bundler/setup'
 
-require_relative 'plugins/youtube'
-require_relative 'plugins/http_title'
-require_relative 'plugins/twitch'
+module Clickbait
+  # plugins
+  Dir['plugins/*.rb'].each { |p| require_relative p }
 
-bot = Cinch::Bot.new do
-  configure do |c|
-    c.nick = "mybot"
-    c.user = "something"
-    c.server = "irc.freenode.net"
-    c.channels = ["#chan1", "#chan2"]
-    c.port = 7000
-    c.ssl.use = true
-    c.ssl.verify = true
-    c.plugins.plugins = [Youtube, HTTPTitle, Twitch]
-    c.plugins.options[Youtube] = { api_key: 'CHANGE_ME' }
-    c.plugins.options[HTTPTitle] = { blacklist: [ 
-      "youtube.com",
-      "youtu.be",
-      "twitch.tv"
-    ] }
+  # bot
+  bot = Cinch::Bot.new do
+    configure do |c|
+      c.nick = "mybot"
+      c.user = "something"
+      c.server = "irc.freenode.net"
+      c.channels = ["#chan1", "#chan2"]
+      c.port = 7000
+      c.ssl.use = true
+      c.ssl.verify = true
+      c.plugins.plugins = Plugins.constants.map { |p| Plugins.const_get p }
+      c.plugins.options[Plugins::Youtube] = { api_key: 'CHANGE_ME' }
+      c.plugins.options[Plugins::HTTPTitle] = { blacklist: [ 
+        "youtube.com",
+        "youtu.be",
+        "twitch.tv",
+        "imdb.com"
+      ] }
+    end
   end
-end
 
-bot.loggers.level = :info
-bot.start
+  # party
+  bot.loggers.level = :info
+  bot.start
+end

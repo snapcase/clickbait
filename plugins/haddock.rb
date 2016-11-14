@@ -2,12 +2,14 @@ require 'open-uri'
 require 'json'
 require 'cinch'
 
-class Haddock
-  include Cinch::Plugin
+module Clickbait::Plugins
+  class Haddock
+    include Cinch::Plugin
 
-  match 'haddock'
+    match 'haddock'
 
-  def execute(m)
-    m.reply open('https://haddock.updog.se/?json') { |f| JSON.parse(f.read)['quote'] }
+    def execute(m)
+      m.reply open('https://haddock.updog.se/?json') { |f| JSON.parse(f.read)['quote'] }
+    end
   end
 end
