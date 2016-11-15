@@ -10,20 +10,18 @@ module Clickbait::Plugins
 
     def info(id)
       url = "http://www.omdbapi.com/?i=#{id}&plot=short&r=json"
-      if json = JSON.load(open(url))
-        str = '%s (%d)' % [json['Title'], json['Year']]
-        unless json['imdbRating'] == 'N/A'
-          str << '. Ratings: %.1f/10 from %s users' % [json['imdbRating'], json['imdbVotes']]
-        end
-        str << '. Plot: %s' % [json["Plot"]]
+      json = open(url) { |f| JSON.parse(f.read, symbolize_names: true) }
+      return unless json
+      str = format('%s (%d)', json[:Title], json[:Year])
+      unless json[:imdbRating] == 'N/A'
+        str << format('. Ratings: %.1f/10 from %s users', json[:imdbRating], json[:imdbVotes])
       end
+      str << format('. Plot: %s', json[:Plot])
     end
 
     def listen(m)
       ids = m.message.scan(%r{(?:https?://)?www.imdb.com/title/(tt[0-9]+)/?}).flatten
-      unless ids.empty?
-        ids.each { |id| m.reply(info(id)) }
-      end
+      ids.each { |id| m.reply(info(id)) } unless ids.empty?
     end
   end
 end
