@@ -6,6 +6,10 @@ module Clickbait::Plugins
   class HTTPTitle
     include Cinch::Plugin
 
+    # 405 = method not allowed
+    CODES = [200, 405].freeze
+    TYPES = ['text/html', 'text/xml', 'application/atom+xml'].freeze
+
     set :required_options, [:blacklist]
 
     listen_to :channel
@@ -16,34 +20,36 @@ module Clickbait::Plugins
       @clnt.cookie_manager = nil
       @clnt.ssl_config.verify_mode = OpenSSL::SSL::VERIFY_NONE
       @clnt.default_header = { 'Accept' => 'text/html', 'Accept-Language' => 'en' }
-      @options = { :follow_redirect => true }
+      @options = { follow_redirect: true }
     end
-    
+
     def get_title(url)
       host = URI.parse(url).host
       domain = host_without_www(host)
-      unless config[:blacklist].include?(domain)
-        url << '.rss' if domain =~ /(?:.+\.)?reddit(?:static)?\.com/
-        req = @clnt.head(url, @options)
-        if [200, 405].include?(req.status_code) && req.content_type.start_with?('text/html', 'text/xml')
-          doc = Nokogiri::HTML(@clnt.get_content(url))
-          if title = doc.at('title')
-            title = sanitize(title.text)
-            return title.eql?("Imgur") ? nil : title
-          end
-        end
-      end
+      # blacklisted domain
+      return if config[:blacklist].include?(domain)
+      url << '.rss' if domain =~ /(?:.+\.)?reddit(?:static)?\.com/
+      req = @clnt.head(url, @options)
+      # make sure it's a document that we can parse
+      return unless CODES.include?(req.status_code) && TYPES.any? { |w| req.content_type[w] }
+      doc = Nokogiri::HTML(@clnt.get_content(url))
+      title = doc.at('title')
+      # couldn't find a title
+      return unless title
+      title = sanitize(title.text)
+      title.eql?('Imgur') ? nil : title
     end
 
     def listen(m)
       urls = URI.extract(m.message, /https?/)
-      urls.each do |url| 
+      urls.each do |url|
         title = get_title(url)
         m.reply(title) if title
       end
     end
 
     private
+
     def host_without_www(host)
       host = host.downcase
       host.start_with?('www.') ? host[4..-1] : host
@@ -51,8 +57,7 @@ module Clickbait::Plugins
 
     def sanitize(title)
       title.strip!
-      title.gsub!(/\s{2,}|[\n\t]/, ' ')
-      return title
+      title.gsub(/\s{2,}|[\n\t]/, ' ')
     end
   end
 end
