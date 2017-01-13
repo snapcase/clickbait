@@ -25,6 +25,7 @@ module Clickbait::Plugins
 
     def get_title(url)
       host = URI.parse(url).host
+      return unless host
       domain = host_without_www(host)
       # blacklisted domain
       return if config[:blacklist].include?(domain)

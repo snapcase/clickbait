@@ -35,9 +35,9 @@ module Clickbait::Plugins
     end
 
     def listen(m)
-      urls = URI.extract(m.message, /https?/)
+      urls = URI.extract(m.message, /https?/).map { |u| URI.parse(u) }.reject { |u| u.host.nil? }
       urls.each do |url|
-        check_url(url, m)
+        check_url(url.to_s, m)
       end
     end
   end
