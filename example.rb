@@ -16,6 +16,7 @@ module Clickbait
       c.ssl.verify = true
       c.plugins.plugins = Plugins.constants.map { |p| Plugins.const_get p }
       c.plugins.options[Plugins::Youtube] = { api_key: 'CHANGE_ME' }
+      c.plugins.options[Plugins::Imdb]    = { api_key: 'get one at omdbapi.com' }
       c.plugins.options[Plugins::HTTPTitle] = { blacklist: [
         'youtube.com',
         'youtu.be',
