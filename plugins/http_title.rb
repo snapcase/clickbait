@@ -34,11 +34,15 @@ module Clickbait::Plugins
       # make sure it's a document that we can parse
       return unless CODES.include?(req.status_code) && TYPES.any? { |w| req.content_type[w] }
       doc = Nokogiri::HTML(@clnt.get_content(url))
-      title = doc.at('title')
-      # couldn't find a title
-      return unless title
-      title = sanitize(title.text)
-      title.eql?('Imgur') ? nil : title
+      if domain == 'instagram.com'
+        doc.at("meta[name='description']")['content']
+      else
+        title = doc.at('title')
+        # couldn't find a title
+        return unless title
+        title = sanitize(title.text)
+        title.eql?('Imgur') ? nil : title
+      end
     end
 
     def listen(m)
