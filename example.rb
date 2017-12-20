@@ -21,8 +21,13 @@ module Clickbait
         'youtube.com',
         'youtu.be',
         'twitch.tv',
-        'imdb.com'
+        'imdb.com',
+        'twitter.com'
       ] }
+      c.plugins.options[Plugins::Twitter]  = {
+        consumer_key: 'create an app at https://apps.twitter.com',
+        consumer_secret: 'see above'
+      }
     end
   end
 
