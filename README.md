@@ -32,33 +32,38 @@ Configure
 ```ruby
 require 'bundler/setup'
 
-require_relative 'plugins/youtube'
-require_relative 'plugins/http_title'
-require_relative 'plugins/twitch'
-require_relative 'plugins/oldurl'
+module Clickbait
+  Dir['plugins/*.rb'].each { |p| require_relative p }
 
-bot = Cinch::Bot.new do
-  configure do |c|
-    c.nick = "mybot"
-    c.user = "something"
-    c.server = "irc.freenode.net"
-    c.channels = ["#chan1", "#chan2"]
-    c.port = 7000
-    c.ssl.use = true
-    c.ssl.verify = true
-    c.plugins.plugins = [Youtube, HTTPTitle, Twitch, OldURL]
-    c.plugins.options[Youtube] = { api_key: 'CHANGE_ME' }
-    c.plugins.options[HTTPTitle] = { blacklist: [
-      "youtube.com",
-      "youtu.be",
-      "twitch.tv"
-    ] }
-    c.plugins.options[OldURL] = { db: 'sqlite://old.db' }
+  bot = Cinch::Bot.new do
+    configure do |c|
+      c.nick = 'mybot'
+      c.user = 'something'
+      c.server = 'irc.freenode.net'
+      c.channels = ['#chan1', '#chan2']
+      c.port = 7000
+      c.ssl.use = true
+      c.ssl.verify = true
+      c.plugins.plugins = Plugins.constants.map { |p| Plugins.const_get p }
+      c.plugins.options[Plugins::Youtube] = { api_key: 'CHANGE_ME' }
+      c.plugins.options[Plugins::Imdb]    = { api_key: 'get one at omdbapi.com' }
+      c.plugins.options[Plugins::HTTPTitle] = { blacklist: [
+        'youtube.com',
+        'youtu.be',
+        'twitch.tv',
+        'imdb.com',
+        'twitter.com'
+      ] }
+      c.plugins.options[Plugins::Twitter]  = {
+        consumer_key: 'create an app at https://apps.twitter.com',
+        consumer_secret: 'see above'
+      }
+    end
   end
-end
 
-bot.loggers.level = :info
-bot.start
+  bot.loggers.level = :info
+  bot.start
+end
 ```
 
 List of plugins
